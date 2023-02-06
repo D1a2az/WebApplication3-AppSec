@@ -1,0 +1,175 @@
+﻿@page
+@model WebApplication3.Pages.RegisterModel
+@{
+}
+
+<div class="container mt-5">
+
+	<div class="row justify-content-center align-items-center">
+
+		<div class="col-sm-12 col-md-12 col-lg-4">
+			<h1 class="mb-3">Register </h1>
+
+			<form method="post" enctype="multipart/form-data">
+				<div asp-validation-summary="All" class="text-danger"></div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="MyRegisterModel.FullName">Full Name</label>
+					<input type="Text" asp-for="MyRegisterModel.FullName" class="form-control" />
+					<span asp-validation-for="MyRegisterModel.FullName" class="text-danger"></span>
+				</div>
+
+				
+				<div class="mb-3">
+					<label class="form-label" asp-for="MyRegisterModel.EmailAddress">Email Address</label>
+					<input type="Text" asp-for="MyRegisterModel.EmailAddress" class="form-control" />
+					<span asp-validation-for="MyRegisterModel.EmailAddress" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="MyRegisterModel.Password">Password</label>
+					<input id="passwordET" type="Text" asp-for="MyRegisterModel.Password" class="form-control" oninput="passwordFeedback()"/>
+				</div>
+
+				<div class="bg-light my-3 rounded border border-dark">
+					<span id="passwordFeedback"></span>
+				</div>
+				
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="MyRegisterModel.ConfirmPassword">Confirm Password</label>
+					<input type="Text" asp-for="MyRegisterModel.ConfirmPassword" class="form-control" />
+					<span asp-validation-for="MyRegisterModel.ConfirmPassword" class="text-danger"></span>
+				</div>
+				
+				<div class="mb-3">
+					<label class="form-label" asp-for="MyRegisterModel.Gender">Gender</label>
+					<div class="form-check form-check-inline">
+						@Html.RadioButtonFor(m => m.MyRegisterModel.Gender, "M", new {@class = "formcheck-input"})
+						<label class="form-check-label">Male</label>
+					</div>
+					<div class="form-check form-check-inline">
+						@Html.RadioButtonFor(m => m.MyRegisterModel.Gender, "F", new {@class = "formcheck-input"})
+						<label class="form-check-label">Female</label>
+					</div>
+					<span asp-validation-for="MyRegisterModel.Gender" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="MyRegisterModel.MobileNumber">Mobile Number</label>
+					<input type="Text" asp-for="MyRegisterModel.MobileNumber" class="form-control" />
+					<span asp-validation-for="MyRegisterModel.MobileNumber" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="MyRegisterModel.DeliveryAddress">Delivery Address</label>
+					<input type="Text" asp-for="MyRegisterModel.DeliveryAddress" class="form-control" />
+					<span asp-validation-for="MyRegisterModel.DeliveryAddress" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="MyRegisterModel.CreditCard">Credit Card</label>
+					<input type="Text" asp-for="MyRegisterModel.CreditCard" class="form-control" />
+					<span asp-validation-for="MyRegisterModel.CreditCard" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label" asp-for="MyRegisterModel.AboutMe">About Me</label>
+					<input type="Text" asp-for="MyRegisterModel.AboutMe" class="form-control" />
+					<span asp-validation-for="MyRegisterModel.AboutMe" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<!-- Image -->
+					<input type="file" accept="image/jpg" asp-for="Upload"
+						   class="form-control" onchange="showImgPreview(this)" /><br />
+					<img id="imgPreview" class="rounded-circle"
+						 style="height:300px;width:300px;object-fit:cover"
+						 src="/uploads/user.jpg" />
+				</div>
+
+				<input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
+				<div class="mb-3">
+
+					<button id="submit-register" type="submit" class="btn btn-primary">Register</button>
+				</div>
+			</form>
+		</div>
+		
+	</div>
+</div>
+<script>
+	grecaptcha.ready(function () { 
+		grecaptcha.execute('6LddevwjAAAAAH3nltABAK_h9mLRkZ2QWxGBZX9V', { action: 'Register' }).then(function (token) {
+		document.getElementById("g-recaptcha-response").value = token;
+	});
+	});
+
+	function showImgPreview(input) {
+		if (input.files[0]) {
+			var uploadimg = new FileReader();
+			uploadimg.onload = function(displayimg) {
+				$("#imgPreview").attr('src', displayimg.target.result);
+			}
+			uploadimg.readAsDataURL(input.files[0]);
+		}
+	}
+
+	// Password Check
+
+	const passwordInput = document.getElementById('passwordET');
+	const passwordFeedbackText = document.getElementById('passwordFeedback');
+
+
+	function passwordFeedback() {
+        var password = passwordInput.value;
+        var password_score = 0;
+        var feedback = "";
+
+		if (password.length < 12) {
+			feedback += "Minimum password length is 12.\n";
+		} else {
+			password_score += 1;
+		}
+
+		if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
+			password_score += 1;
+		} else {
+			feedback += "Minimum 1 lowercase and uppercase letter.\n";
+		}
+
+		if (password.match(/\d/)) {
+			password_score += 1;
+		} else {
+			feedback += "Minimum 1 number.\n";
+		}
+
+		if (password.match(/[^a-zA-Z\d]/)) {
+			password_score += 1;
+		} else {
+			feedback += "Minimum 1 Special Character.\n";
+		}
+
+		if (password_score < 2) {
+			passwordFeedbackText.innerText = "Password Strength: Weak\n" + feedback;
+		} else if (password_score === 2) {
+			passwordFeedbackText.innerText = "Password Strength: Decent\n" + feedback;
+		} else if (password_score === 3) {
+			passwordFeedbackText.innerText = "Password Strength: Medium\n" + feedback;
+		} else {
+			passwordFeedbackText.innerText = "Password Strength: Strong\n" + feedback;
+		}
+	}
+
+	//passwordInput.addEventListener('input', passwordFeedback(passwordInput.value));
+	//passwordInput.addEventListener('propertyChange', passwordFeedback(passwordInput.value));
+
+</script>
+@section Scripts{
+	@{
+
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+	}
+		
+}
